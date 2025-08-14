@@ -1,0 +1,1448 @@
+<!DOCTYPE html><html lang="en"><head><meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://code.jquery.com https://unpkg.com https://d3js.org https://threejs.org https://cdn.plot.ly https://stackpath.bootstrapcdn.com https://maps.googleapis.com https://cdn.tailwindcss.com https://ajax.googleapis.com https://kit.fontawesome.com https://cdn.datatables.net https://maxcdn.bootstrapcdn.com https://code.highcharts.com https://tako-static-assets-production.s3.amazonaws.com https://www.youtube.com https://fonts.googleapis.com https://fonts.gstatic.com https://pfst.cf2.poecdn.net https://puc.poecdn.net https://i.imgur.com https://wikimedia.org https://*.icons8.com https://*.giphy.com https://picsum.photos https://images.unsplash.com; frame-src 'self' https://www.youtube.com https://trytako.com; child-src 'self'; manifest-src 'self'; worker-src 'self'; upgrade-insecure-requests; block-all-mixed-content;">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SCANA THRIVE Growth Companion</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #0ea5e9;
+      --primary-dark: #0284c7;
+      --secondary: #06b6d4;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --purple: #8b5cf6;
+      --bg-dark: #1e293b;
+      --bg-darker: #0f172a;
+      --card: #334155;
+      --card-hover: #475569;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border: #475569;
+      --input-bg: #1e293b;
+      --shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, var(--bg-darker) 0%, var(--bg-dark) 100%);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    /* Header */
+    .header {
+      background: var(--bg-darker);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+      background: rgba(15, 23, 42, 0.9);
+    }
+
+    .header-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      background: var(--card);
+      padding: 0.5rem 1rem;
+      border-radius: 0.75rem;
+    }
+
+    .role-badge {
+      padding: 0.25rem 0.75rem;
+      border-radius: 0.5rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+
+    .role-agent { background: var(--primary); }
+    .role-supervisor { background: var(--purple); }
+
+    /* Main Layout */
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 1rem;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1fr 2fr 1fr;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    @media (max-width: 1024px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Cards */
+    .card {
+      background: var(--card);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+    }
+
+    .card-header {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* Progress Section */
+    .progress-section {
+      margin-bottom: 1.5rem;
+    }
+
+    .level-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      padding: 0.5rem 1rem;
+      border-radius: 2rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+
+    .xp-bar {
+      background: var(--bg-dark);
+      height: 1.5rem;
+      border-radius: 0.75rem;
+      overflow: hidden;
+      margin-bottom: 0.5rem;
+    }
+
+    .xp-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+      transition: width 0.5s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .xp-fill::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      animation: shimmer 2s infinite;
+    }
+
+    @keyframes shimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    /* Career Path */
+    .career-path {
+      margin-top: 1.5rem;
+    }
+
+    .path-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.75rem;
+      margin-bottom: 0.5rem;
+      background: var(--bg-dark);
+      border-radius: 0.5rem;
+      transition: all 0.2s;
+    }
+
+    .path-item.current {
+      background: var(--primary);
+      color: white;
+    }
+
+    .path-item.completed {
+      opacity: 0.6;
+    }
+
+    .path-icon {
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 50%;
+      background: var(--card-hover);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+    }
+
+    .path-item.current .path-icon {
+      background: white;
+      color: var(--primary);
+    }
+
+    /* Skills Matrix */
+    .skills-grid {
+      display: grid;
+      gap: 0.75rem;
+    }
+
+    .skill-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem;
+      background: var(--bg-dark);
+      border-radius: 0.5rem;
+    }
+
+    .skill-level {
+      display: flex;
+      gap: 0.25rem;
+    }
+
+    .skill-dot {
+      width: 0.75rem;
+      height: 0.75rem;
+      border-radius: 50%;
+      background: var(--border);
+      transition: all 0.2s;
+    }
+
+    .skill-dot.filled {
+      background: var(--primary);
+      box-shadow: 0 0 8px var(--primary);
+    }
+
+    /* Goals Section */
+    .goal-card {
+      background: var(--bg-dark);
+      border-radius: 0.75rem;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border: 1px solid var(--border);
+      transition: all 0.2s;
+    }
+
+    .goal-card:hover {
+      border-color: var(--primary);
+      transform: translateY(-1px);
+    }
+
+    .goal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 0.75rem;
+    }
+
+    .goal-title {
+      font-weight: 600;
+      flex: 1;
+    }
+
+    .goal-meta {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+
+    .priority-badge {
+      padding: 0.25rem 0.5rem;
+      border-radius: 0.375rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .priority-high { background: var(--danger); }
+    .priority-medium { background: var(--warning); }
+    .priority-low { background: var(--success); }
+
+    .goal-status {
+      padding: 0.25rem 0.5rem;
+      border-radius: 0.375rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
+    .status-draft { background: var(--text-muted); color: var(--bg-dark); }
+    .status-pending { background: var(--warning); color: var(--bg-dark); }
+    .status-approved { background: var(--success); }
+    .status-review { background: var(--purple); }
+
+    .milestone-list {
+      margin: 0.75rem 0;
+    }
+
+    .milestone {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0;
+    }
+
+    .milestone input[type="checkbox"] {
+      width: 1.25rem;
+      height: 1.25rem;
+      accent-color: var(--primary);
+    }
+
+    .milestone.completed label {
+      text-decoration: line-through;
+      opacity: 0.6;
+    }
+
+    /* Comments Section */
+    .comments-section {
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .comment {
+      display: flex;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .comment-avatar {
+      width: 2rem;
+      height: 2rem;
+      border-radius: 50%;
+      background: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.875rem;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .comment-content {
+      flex: 1;
+      background: var(--card);
+      padding: 0.5rem 0.75rem;
+      border-radius: 0.5rem;
+    }
+
+    .comment-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.25rem;
+      font-size: 0.875rem;
+    }
+
+    .comment-author {
+      font-weight: 600;
+    }
+
+    .comment-time {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+    }
+
+    /* Forms */
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.375rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 0.625rem;
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      color: var(--text);
+      font-family: inherit;
+      transition: all 0.2s;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    /* Buttons */
+    .btn {
+      padding: 0.625rem 1.25rem;
+      border: none;
+      border-radius: 0.5rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: var(--card-hover);
+      color: var(--text);
+    }
+
+    .btn-secondary:hover {
+      background: var(--border);
+    }
+
+    .btn-success {
+      background: var(--success);
+      color: white;
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: white;
+    }
+
+    .btn-small {
+      padding: 0.375rem 0.75rem;
+      font-size: 0.875rem;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tab {
+      padding: 0.75rem 1rem;
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tab.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+
+    /* Modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      backdrop-filter: blur(4px);
+    }
+
+    .modal {
+      background: var(--card);
+      border-radius: 1rem;
+      padding: 2rem;
+      max-width: 600px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+      animation: modalSlide 0.3s ease;
+    }
+
+    @keyframes modalSlide {
+      from {
+        transform: translateY(-20px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .modal-header {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+    }
+
+    /* Achievements */
+    .achievements-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .achievement {
+      text-align: center;
+      padding: 1rem;
+      background: var(--bg-dark);
+      border-radius: 0.75rem;
+      transition: all 0.2s;
+      position: relative;
+    }
+
+    .achievement.earned {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+    }
+
+    .achievement-icon {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .achievement.locked {
+      opacity: 0.5;
+    }
+
+    /* Focus Timer */
+    .timer-display {
+      font-size: 3rem;
+      font-weight: 700;
+      text-align: center;
+      margin: 1rem 0;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .timer-controls {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      .header-content {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .tabs {
+        overflow-x: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="header-content">
+      <div class="logo">
+        <span>🚀</span>
+        <span>SCANA THRIVE Growth Companion</span>
+      </div>
+      <div class="user-info">
+        <select id="userRole" onchange="switchRole()">
+          <option value="agent">Agent View</option>
+          <option value="supervisor">Supervisor View</option>
+        </select>
+        <span id="userName">Alex Johnson</span>
+        <span class="role-badge role-agent" id="roleBadge">Agent</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="dashboard-grid">
+      <!-- Left Column: Progress & Career Path -->
+      <div>
+        <div class="card">
+          <div class="card-header">📈 My Progress</div>
+          <div class="progress-section">
+            <div class="level-badge">
+              <span>⭐</span>
+              <span>Level <span id="userLevel">7</span> Growth Champion</span>
+            </div>
+            <div class="xp-bar">
+              <div class="xp-fill" id="xpBar" style="width: 65%"></div>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.875rem; color: var(--text-muted);">
+              <span>XP: <span id="currentXP">650</span>/1000</span>
+              <span>🪙 <span id="coinCount">45</span> coins</span>
+            </div>
+          </div>
+
+          <div class="career-path">
+            <h3 style="margin-bottom: 1rem;">Career Journey</h3>
+            <div class="path-item completed">
+              <div class="path-icon">✓</div>
+              <div>
+                <div style="font-weight: 600;">Junior Agent</div>
+                <div style="font-size: 0.875rem; color: var(--text-muted);">Completed: Jan 2024</div>
+              </div>
+            </div>
+            <div class="path-item current">
+              <div class="path-icon">👤</div>
+              <div>
+                <div style="font-weight: 600;">Senior Agent</div>
+                <div style="font-size: 0.875rem;">Current Position</div>
+              </div>
+            </div>
+            <div class="path-item">
+              <div class="path-icon">🎯</div>
+              <div>
+                <div style="font-weight: 600;">Team Lead</div>
+                <div style="font-size: 0.875rem; color: var(--text-muted);">Target: Q2 2026</div>
+              </div>
+            </div>
+            <div class="path-item">
+              <div class="path-icon">🌟</div>
+              <div>
+                <div style="font-weight: 600;">Supervisor</div>
+                <div style="font-size: 0.875rem; color: var(--text-muted);">Future Goal</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top: 1rem;">
+          <div class="card-header">💡 Key Skills</div>
+          <div class="skills-grid">
+            <div class="skill-item">
+              <span>Customer Service</span>
+              <div class="skill-level">
+                <div class="skill-dot filled"></div>
+                <div class="skill-dot filled"></div>
+                <div class="skill-dot filled"></div>
+                <div class="skill-dot filled"></div>
+                <div class="skill-dot"></div>
+              </div>
+            </div>
+            <div class="skill-item">
+              <span>Leadership</span>
+              <div class="skill-level">
+                <div class="skill-dot filled"></div>
+                <div class="skill-dot filled"></div>
+                <div class="skill-dot filled"></div>
+                <div class="skill-dot"></div>
+                <div class="skill-dot"></div>
+              </div>
+            </div>
+            <div class="skill-item">
+              <span>Technical Systems</span>
+              <div class="skill-level">
+                <div class="skill-dot filled"></div>
+                <div class="skill-dot filled"></div>
+                <div class="skill-dot filled"></div>
+                <div class="skill-dot filled"></div>
+                <div class="skill-dot filled"></div>
+              </div>
+            </div>
+            <div class="skill-item">
+              <span>Project Management</span>
+              <div class="skill-level">
+                <div class="skill-dot filled"></div>
+                <div class="skill-dot filled"></div>
+                <div class="skill-dot"></div>
+                <div class="skill-dot"></div>
+                <div class="skill-dot"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Center Column: Goals & Development -->
+      <div>
+        <div class="card">
+          <div class="tabs">
+            <button class="tab active" onclick="switchTab('active')">Active Goals</button>
+            <button class="tab" onclick="switchTab('development')">Development Plan</button>
+            <button class="tab" onclick="switchTab('review')">Under Review</button>
+            <button class="tab" onclick="switchTab('completed')">Completed</button>
+          </div>
+
+          <div id="activeTab" class="tab-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+              <h3>Current Goals</h3>
+              <button class="btn btn-primary btn-small" onclick="openNewGoalModal()">
+                <span>+</span> New Goal
+              </button>
+            </div>
+
+            <div id="goalsContainer">
+              <!-- Goals will be rendered here -->
+            </div>
+          </div>
+
+          <div id="developmentTab" class="tab-content" style="display: none;">
+            <h3 style="margin-bottom: 1rem;">Development Plan for Team Lead Position</h3>
+            
+            <div class="goal-card">
+              <h4 style="margin-bottom: 0.75rem;">Required Competencies</h4>
+              <div class="milestone-list">
+                <div class="milestone">
+                  <input type="checkbox" checked="">
+                  <label>Complete Advanced Customer Service Training</label>
+                </div>
+                <div class="milestone">
+                  <input type="checkbox" checked="">
+                  <label>Shadow current Team Lead for 2 weeks</label>
+                </div>
+                <div class="milestone">
+                  <input type="checkbox">
+                  <label>Lead 3 team meetings independently</label>
+                </div>
+                <div class="milestone">
+                  <input type="checkbox">
+                  <label>Complete Leadership Certification</label>
+                </div>
+                <div class="milestone">
+                  <input type="checkbox">
+                  <label>Achieve 95% team satisfaction score</label>
+                </div>
+              </div>
+              <div style="margin-top: 1rem;">
+                <div style="background: var(--bg-dark); height: 0.75rem; border-radius: 0.375rem; overflow: hidden;">
+                  <div style="width: 40%; height: 100%; background: var(--success);"></div>
+                </div>
+                <div style="text-align: center; margin-top: 0.5rem; font-size: 0.875rem; color: var(--text-muted);">
+                  40% Complete
+                </div>
+              </div>
+            </div>
+
+            <div class="goal-card">
+              <h4 style="margin-bottom: 0.75rem;">Recommended Learning</h4>
+              <ul style="list-style: none; padding: 0;">
+                <li style="padding: 0.5rem 0;">📚 "The Five Dysfunctions of a Team" by Patrick Lencioni</li>
+                <li style="padding: 0.5rem 0;">🎓 LinkedIn Learning: "Managing Your Team Through Change"</li>
+                <li style="padding: 0.5rem 0;">🎯 Internal Workshop: "Effective Delegation Strategies"</li>
+                <li style="padding: 0.5rem 0;">💬 Monthly Mentorship with Sarah Chen (Current Supervisor)</li>
+              </ul>
+            </div>
+          </div>
+
+          <div id="reviewTab" class="tab-content" style="display: none;">
+            <h3 style="margin-bottom: 1rem;">Goals Pending Review</h3>
+            <div id="reviewGoalsContainer">
+              <!-- Review goals will be rendered here -->
+            </div>
+          </div>
+
+          <div id="completedTab" class="tab-content" style="display: none;">
+            <h3 style="margin-bottom: 1rem;">Completed Goals</h3>
+            <div id="completedGoalsContainer">
+              <!-- Completed goals will be rendered here -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Focus Session Timer -->
+        <div class="card" style="margin-top: 1rem;">
+          <div class="card-header">
+            <span>🎯 Focus Session</span>
+            <select id="focusGoal" style="width: auto;">
+              <option value="">Select a goal to focus on...</option>
+            </select>
+          </div>
+          <div class="timer-display" id="timerDisplay">25:00</div>
+          <div class="timer-controls">
+            <button class="btn btn-primary" id="startBtn" onclick="startTimer()">Start</button>
+            <button class="btn btn-secondary" id="pauseBtn" onclick="pauseTimer()" disabled="">Pause</button>
+            <button class="btn btn-secondary" onclick="resetTimer()">Reset</button>
+          </div>
+          <div style="text-align: center; margin-top: 1rem; color: var(--text-muted);" id="focusStatus">
+            Complete focus sessions to earn XP and coins!
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Achievements & Activity -->
+      <div>
+        <div class="card">
+          <div class="card-header">🏆 Achievements</div>
+          <div class="achievements-grid">
+            <div class="achievement earned">
+              <div class="achievement-icon">🌟</div>
+              <div style="font-size: 0.875rem; font-weight: 500;">First Goal</div>
+            </div>
+            <div class="achievement earned">
+              <div class="achievement-icon">🔥</div>
+              <div style="font-size: 0.875rem; font-weight: 500;">7-Day Streak</div>
+            </div>
+            <div class="achievement earned">
+              <div class="achievement-icon">💯</div>
+              <div style="font-size: 0.875rem; font-weight: 500;">Perfect Week</div>
+            </div>
+            <div class="achievement locked">
+              <div class="achievement-icon">🎯</div>
+              <div style="font-size: 0.875rem; font-weight: 500;">Goal Master</div>
+            </div>
+            <div class="achievement locked">
+              <div class="achievement-icon">👑</div>
+              <div style="font-size: 0.875rem; font-weight: 500;">Team Leader</div>
+            </div>
+            <div class="achievement locked">
+              <div class="achievement-icon">🚀</div>
+              <div style="font-size: 0.875rem; font-weight: 500;">Fast Track</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top: 1rem;">
+          <div class="card-header">📊 Recent Activity</div>
+          <div style="font-size: 0.875rem;">
+            <div style="padding: 0.75rem 0; border-bottom: 1px solid var(--border);">
+              <div style="font-weight: 500;">Goal Completed</div>
+              <div style="color: var(--text-muted);">Q3 Performance Review - 2 days ago</div>
+            </div>
+            <div style="padding: 0.75rem 0; border-bottom: 1px solid var(--border);">
+              <div style="font-weight: 500;">Feedback Received</div>
+              <div style="color: var(--text-muted);">From Sarah Chen - 3 days ago</div>
+            </div>
+            <div style="padding: 0.75rem 0; border-bottom: 1px solid var(--border);">
+              <div style="font-weight: 500;">Milestone Achieved</div>
+              <div style="color: var(--text-muted);">Customer Service Training - 1 week ago</div>
+            </div>
+            <div style="padding: 0.75rem 0;">
+              <div style="font-weight: 500;">New Goal Created</div>
+              <div style="color: var(--text-muted);">Team Building Initiative - 2 weeks ago</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top: 1rem;">
+          <div class="card-header">🎁 Reward Store</div>
+          <div style="text-align: center; padding: 1rem 0;">
+            <div style="font-size: 2rem; margin-bottom: 0.5rem;">🪙</div>
+            <div style="font-size: 1.5rem; font-weight: 600; margin-bottom: 0.5rem;">45 Coins</div>
+            <button class="btn btn-primary btn-small" onclick="openRewardStore()">
+              Browse Rewards
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- New Goal Modal -->
+  <div id="newGoalModal" class="modal-backdrop">
+    <div class="modal">
+      <h2 class="modal-header">Create New Goal</h2>
+      <form onsubmit="createGoal(event)">
+        <div class="form-group">
+          <label for="goalTitle">Goal Title</label>
+          <input type="text" id="goalTitle" required="" placeholder="Enter your goal...">
+        </div>
+        
+        <div class="form-group">
+          <label for="goalCategory">Category</label>
+          <select id="goalCategory" required="">
+            <option value="">Select category...</option>
+            <option value="performance">Performance Goal</option>
+            <option value="development">Professional Development</option>
+            <option value="skill">Skill Building</option>
+            <option value="project">Special Project</option>
+            <option value="team">Team Initiative</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="goalDescription">Description</label>
+          <textarea id="goalDescription" placeholder="Describe your goal and success criteria..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="goalDueDate">Target Date</label>
+          <input type="date" id="goalDueDate" required="">
+        </div>
+
+        <div class="form-group">
+          <label for="goalPriority">Priority</label>
+          <select id="goalPriority" required="">
+            <option value="high">High - Critical for advancement</option>
+            <option value="medium">Medium - Important growth area</option>
+            <option value="low">Low - Nice to have</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="goalMilestones">Milestones (one per line)</label>
+          <textarea id="goalMilestones" rows="4" placeholder="Define key milestones..."></textarea>
+        </div>
+
+        <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('newGoalModal')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Create Goal</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Reward Store Modal -->
+  <div id="rewardModal" class="modal-backdrop">
+    <div class="modal">
+      <h2 class="modal-header">🎁 THRIVE Reward Store</h2>
+      <div style="text-align: center; margin-bottom: 1.5rem;">
+        <div style="font-size: 1.25rem;">Your Balance: <strong>🪙 45 coins</strong></div>
+      </div>
+      
+      <div style="display: grid; gap: 1rem;">
+        <div class="goal-card" style="cursor: pointer;" onclick="redeemReward('Extra PTO Day', 50)">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div style="font-weight: 600;">🏖️ Extra PTO Day</div>
+              <div style="font-size: 0.875rem; color: var(--text-muted);">Take a well-deserved day off</div>
+            </div>
+            <div style="font-weight: 600;">50 🪙</div>
+          </div>
+        </div>
+        
+        <div class="goal-card" style="cursor: pointer;" onclick="redeemReward('Leadership Workshop', 30)">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div style="font-weight: 600;">📚 Leadership Workshop</div>
+              <div style="font-size: 0.875rem; color: var(--text-muted);">Exclusive training session</div>
+            </div>
+            <div style="font-weight: 600;">30 🪙</div>
+          </div>
+        </div>
+        
+        <div class="goal-card" style="cursor: pointer;" onclick="redeemReward('Mentorship Hour', 20)">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div style="font-weight: 600;">💬 1-on-1 Mentorship Hour</div>
+              <div style="font-size: 0.875rem; color: var(--text-muted);">With a senior leader</div>
+            </div>
+            <div style="font-weight: 600;">20 🪙</div>
+          </div>
+        </div>
+        
+        <div class="goal-card" style="cursor: pointer;" onclick="redeemReward('Conference Pass', 40)">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div style="font-weight: 600;">🎫 Industry Conference Pass</div>
+              <div style="font-size: 0.875rem; color: var(--text-muted);">Attend a professional conference</div>
+            </div>
+            <div style="font-weight: 600;">40 🪙</div>
+          </div>
+        </div>
+        
+        <div class="goal-card" style="cursor: pointer;" onclick="redeemReward('Team Lunch', 15)">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div style="font-weight: 600;">🍕 Team Lunch</div>
+              <div style="font-size: 0.875rem; color: var(--text-muted);">Treat your team to lunch</div>
+            </div>
+            <div style="font-weight: 600;">15 🪙</div>
+          </div>
+        </div>
+      </div>
+      
+      <div style="margin-top: 1.5rem; text-align: right;">
+        <button class="btn btn-secondary" onclick="closeModal('rewardModal')">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // State Management
+    let currentUser = {
+      role: 'agent',
+      name: 'Alex Johnson',
+      id: 'user1',
+      level: 7,
+      xp: 650,
+      coins: 45
+    };
+
+    let goals = [
+      {
+        id: 1,
+        title: 'Complete Advanced Customer Service Certification',
+        description: 'Obtain certification to qualify for Team Lead position',
+        category: 'development',
+        priority: 'high',
+        status: 'approved',
+        dueDate: '2025-09-30',
+        createdBy: 'user1',
+        approvedBy: 'supervisor1',
+        milestones: [
+          { text: 'Complete Module 1: Communication', done: true },
+          { text: 'Complete Module 2: Conflict Resolution', done: true },
+          { text: 'Complete Module 3: Team Dynamics', done: false },
+          { text: 'Pass final assessment', done: false }
+        ],
+        comments: [
+          {
+            author: 'Sarah Chen',
+            role: 'supervisor',
+            text: 'Great progress so far! Focus on Module 3 scenarios.',
+            timestamp: '2025-07-28'
+          }
+        ]
+      },
+      {
+        id: 2,
+        title: 'Q3 Performance Metrics',
+        description: 'Achieve 95% customer satisfaction score',
+        category: 'performance',
+        priority: 'high',
+        status: 'approved',
+        dueDate: '2025-09-30',
+        createdBy: 'user1',
+        milestones: [
+          { text: 'Maintain 95% CSAT for July', done: true },
+          { text: 'Maintain 95% CSAT for August', done: false },
+          { text: 'Maintain 95% CSAT for September', done: false }
+        ],
+        comments: []
+      },
+      {
+        id: 3,
+        title: 'Team Building Initiative',
+        description: 'Lead monthly team building activity',
+        category: 'team',
+        priority: 'medium',
+        status: 'pending',
+        dueDate: '2025-08-15',
+        createdBy: 'user1',
+        milestones: [
+          { text: 'Plan activity', done: false },
+          { text: 'Get budget approval', done: false },
+          { text: 'Execute event', done: false }
+        ],
+        comments: []
+      }
+    ];
+
+    // Timer State
+    let timerInterval = null;
+    let timerSeconds = 25 * 60;
+    let isTimerRunning = false;
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      renderGoals();
+      updateStats();
+      updateFocusGoalSelect();
+    });
+
+    // Role Switching
+    function switchRole() {
+      const role = document.getElementById('userRole').value;
+      currentUser.role = role;
+      const badge = document.getElementById('roleBadge');
+      badge.textContent = role === 'agent' ? 'Agent' : 'Supervisor';
+      badge.className = role === 'agent' ? 'role-badge role-agent' : 'role-badge role-supervisor';
+      document.getElementById('userName').textContent = role === 'agent' ? 'Alex Johnson' : 'Sarah Chen';
+      renderGoals();
+    }
+
+    // Tab Switching
+    function switchTab(tab) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+      
+      event.target.classList.add('active');
+      document.getElementById(tab + 'Tab').style.display = 'block';
+      
+      if (tab === 'review') renderReviewGoals();
+      if (tab === 'completed') renderCompletedGoals();
+    }
+
+    // Goal Rendering
+    function renderGoals() {
+      const container = document.getElementById('goalsContainer');
+      const activeGoals = goals.filter(g => g.status === 'approved' || (currentUser.role === 'agent' && g.status === 'draft'));
+      
+      container.innerHTML = activeGoals.map(goal => `
+        <div class="goal-card">
+          <div class="goal-header">
+            <div>
+              <div class="goal-title">${goal.title}</div>
+              <div class="goal-meta">
+                <span>${getCategoryIcon(goal.category)} ${goal.category}</span>
+                <span>•</span>
+                <span>Due: ${formatDate(goal.dueDate)}</span>
+              </div>
+            </div>
+            <div style="display: flex; gap: 0.5rem;">
+              <span class="priority-badge priority-${goal.priority}">${goal.priority}</span>
+              <span class="goal-status status-${goal.status}">${goal.status}</span>
+            </div>
+          </div>
+          
+          <div style="margin: 0.75rem 0; font-size: 0.875rem; color: var(--text-muted);">
+            ${goal.description}
+          </div>
+          
+          <div class="milestone-list">
+            ${goal.milestones.map((m, idx) => `
+              <div class="milestone ${m.done ? 'completed' : ''}">
+                <input type="checkbox" ${m.done ? 'checked' : ''} 
+                  onchange="toggleMilestone(${goal.id}, ${idx})"
+                  ${currentUser.role === 'supervisor' ? 'disabled' : ''}>
+                <label>${m.text}</label>
+              </div>
+            `).join('')}
+          </div>
+          
+          <div style="margin: 1rem 0;">
+            <div style="background: var(--bg-dark); height: 0.5rem; border-radius: 0.25rem; overflow: hidden;">
+              <div style="width: ${getProgress(goal)}%; height: 100%; background: var(--primary); transition: width 0.3s;"></div>
+            </div>
+            <div style="text-align: right; margin-top: 0.25rem; font-size: 0.75rem; color: var(--text-muted);">
+              ${getProgress(goal)}% Complete
+            </div>
+          </div>
+          
+          ${goal.comments.length > 0 ? renderComments(goal) : ''}
+          
+          <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+            <input type="text" placeholder="Add a comment..." 
+              onkeypress="if(event.key==='Enter') addComment(${goal.id}, this.value, this)"
+              style="flex: 1; padding: 0.5rem;">
+            ${currentUser.role === 'supervisor' && goal.status === 'pending' ? `
+              <button class="btn btn-success btn-small" onclick="approveGoal(${goal.id})">Approve</button>
+            ` : ''}
+            ${currentUser.role === 'agent' && goal.status === 'draft' ? `
+              <button class="btn btn-primary btn-small" onclick="submitForReview(${goal.id})">Submit for Review</button>
+            ` : ''}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderComments(goal) {
+      return `
+        <div class="comments-section">
+          ${goal.comments.map(comment => `
+            <div class="comment">
+              <div class="comment-avatar">${comment.author.charAt(0)}</div>
+              <div class="comment-content">
+                <div class="comment-header">
+                  <span class="comment-author">${comment.author}</span>
+                  <span class="comment-time">${formatDate(comment.timestamp)}</span>
+                </div>
+                <div>${comment.text}</div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    function renderReviewGoals() {
+      const container = document.getElementById('reviewGoalsContainer');
+      const pendingGoals = goals.filter(g => g.status === 'pending');
+      
+      if (pendingGoals.length === 0) {
+        container.innerHTML = '<p style="text-align: center; color: var(--text-muted);">No goals pending review</p>';
+        return;
+      }
+      
+      container.innerHTML = pendingGoals.map(goal => `
+        <div class="goal-card">
+          <div class="goal-header">
+            <div class="goal-title">${goal.title}</div>
+            <span class="priority-badge priority-${goal.priority}">${goal.priority}</span>
+          </div>
+          <div style="margin: 0.75rem 0; font-size: 0.875rem; color: var(--text-muted);">
+            ${goal.description}
+          </div>
+          <div style="display: flex; gap: 0.5rem;">
+            <button class="btn btn-success btn-small" onclick="approveGoal(${goal.id})">Approve</button>
+            <button class="btn btn-danger btn-small" onclick="rejectGoal(${goal.id})">Request Changes</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderCompletedGoals() {
+      const container = document.getElementById('completedGoalsContainer');
+      const completedGoals = goals.filter(g => getProgress(g) === 100);
+      
+      if (completedGoals.length === 0) {
+        container.innerHTML = '<p style="text-align: center; color: var(--text-muted);">No completed goals yet</p>';
+        return;
+      }
+      
+      container.innerHTML = completedGoals.map(goal => `
+        <div class="goal-card">
+          <div class="goal-header">
+            <div class="goal-title">${goal.title}</div>
+            <span style="color: var(--success);">✓ Completed</span>
+          </div>
+          <div style="font-size: 0.875rem; color: var(--text-muted);">
+            Completed on ${formatDate(new Date().toISOString())}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Goal Management Functions
+    function createGoal(event) {
+      event.preventDefault();
+      
+      const milestones = document.getElementById('goalMilestones').value
+        .split('\n')
+        .filter(m => m.trim())
+        .map(m => ({ text: m.trim(), done: false }));
+      
+      const newGoal = {
+        id: goals.length + 1,
+        title: document.getElementById('goalTitle').value,
+        description: document.getElementById('goalDescription').value,
+        category: document.getElementById('goalCategory').value,
+        priority: document.getElementById('goalPriority').value,
+        dueDate: document.getElementById('goalDueDate').value,
+        status: currentUser.role === 'supervisor' ? 'approved' : 'draft',
+        createdBy: currentUser.id,
+        milestones: milestones,
+        comments: []
+      };
+      
+      goals.unshift(newGoal);
+      closeModal('newGoalModal');
+      renderGoals();
+      updateStats();
+      
+      // Clear form
+      event.target.reset();
+    }
+
+    function toggleMilestone(goalId, milestoneIdx) {
+      const goal = goals.find(g => g.id === goalId);
+      goal.milestones[milestoneIdx].done = !goal.milestones[milestoneIdx].done;
+      
+      if (goal.milestones[milestoneIdx].done) {
+        currentUser.xp += 10;
+        currentUser.coins += 2;
+        updateStats();
+      }
+      
+      renderGoals();
+    }
+
+    function addComment(goalId, text, input) {
+      if (!text.trim()) return;
+      
+      const goal = goals.find(g => g.id === goalId);
+      goal.comments.push({
+        author: currentUser.name,
+        role: currentUser.role,
+        text: text.trim(),
+        timestamp: new Date().toISOString()
+      });
+      
+      input.value = '';
+      renderGoals();
+    }
+
+    function approveGoal(goalId) {
+      const goal = goals.find(g => g.id === goalId);
+      goal.status = 'approved';
+      goal.approvedBy = currentUser.id;
+      renderGoals();
+      switchTab('active');
+    }
+
+    function submitForReview(goalId) {
+      const goal = goals.find(g => g.id === goalId);
+      goal.status = 'pending';
+      renderGoals();
+    }
+
+    // Timer Functions
+    function startTimer() {
+      if (isTimerRunning) return;
+      
+      isTimerRunning = true;
+      document.getElementById('startBtn').disabled = true;
+      document.getElementById('pauseBtn').disabled = false;
+      document.getElementById('focusStatus').textContent = 'Stay focused! You got this! 💪';
+      
+      timerInterval = setInterval(() => {
+        timerSeconds--;
+        updateTimerDisplay();
+        
+        if (timerSeconds <= 0) {
+          completeTimer();
+        }
+      }, 1000);
+    }
+
+    function pauseTimer() {
+      isTimerRunning = false;
+      clearInterval(timerInterval);
+      document.getElementById('startBtn').disabled = false;
+      document.getElementById('pauseBtn').disabled = true;
+      document.getElementById('focusStatus').textContent = 'Timer paused. Ready to continue?';
+    }
+
+    function resetTimer() {
+      pauseTimer();
+      timerSeconds = 25 * 60;
+      updateTimerDisplay();
+      document.getElementById('focusStatus').textContent = 'Complete focus sessions to earn XP and coins!';
+    }
+
+    function completeTimer() {
+      pauseTimer();
+      currentUser.xp += 25;
+      currentUser.coins += 5;
+      updateStats();
+      
+      const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBCuBzvLZiTYIG2m98OScTgwOUary4LJUB');
+      audio.play();
+      
+      alert('Great job! You earned 25 XP and 5 coins! 🎉');
+      resetTimer();
+    }
+
+    function updateTimerDisplay() {
+      const minutes = Math.floor(timerSeconds / 60);
+      const seconds = timerSeconds % 60;
+      document.getElementById('timerDisplay').textContent = 
+        `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
+
+    // Utility Functions
+    function getProgress(goal) {
+      if (goal.milestones.length === 0) return 0;
+      const completed = goal.milestones.filter(m => m.done).length;
+      return Math.round((completed / goal.milestones.length) * 100);
+    }
+
+    function getCategoryIcon(category) {
+      const icons = {
+        performance: '📊',
+        development: '📚',
+        skill: '💡',
+        project: '🎯',
+        team: '👥'
+      };
+      return icons[category] || '📌';
+    }
+
+    function formatDate(dateString) {
+      const date = new Date(dateString);
+      const now = new Date();
+      const diffTime = date - now;
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      
+      if (diffDays === 0) return 'Today';
+      if (diffDays === 1) return 'Tomorrow';
+      if (diffDays === -1) return 'Yesterday';
+      if (diffDays > 0 && diffDays <= 7) return `In ${diffDays} days`;
+      if (diffDays < 0 && diffDays >= -7) return `${Math.abs(diffDays)} days ago`;
+      
+      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+
+    function updateStats() {
+      document.getElementById('currentXP').textContent = currentUser.xp;
+      document.getElementById('coinCount').textContent = currentUser.coins;
+      document.getElementById('userLevel').textContent = Math.floor(currentUser.xp / 100) + 1;
+      
+      const xpProgress = currentUser.xp % 100;
+      document.getElementById('xpBar').style.width = xpProgress + '%';
+    }
+
+    function updateFocusGoalSelect() {
+      const select = document.getElementById('focusGoal');
+      const activeGoals = goals.filter(g => g.status === 'approved');
+      
+      select.innerHTML = '<option value="">Select a goal to focus on...</option>' +
+        activeGoals.map(g => `<option value="${g.id}">${g.title}</option>`).join('');
+    }
+
+    // Modal Functions
+    function openNewGoalModal() {
+      document.getElementById('newGoalModal').style.display = 'flex';
+      // Set minimum date to today
+      document.getElementById('goalDueDate').min = new Date().toISOString().split('T')[0];
+    }
+
+    function openRewardStore() {
+      document.getElementById('rewardModal').style.display = 'flex';
+    }
+
+    function closeModal(modalId) {
+      document.getElementById(modalId).style.display = 'none';
+    }
+
+    function redeemReward(name, cost) {
+      if (currentUser.coins >= cost) {
+        currentUser.coins -= cost;
+        updateStats();
+        alert(`🎉 Congratulations! You've redeemed: ${name}`);
+        closeModal('rewardModal');
+      } else {
+        alert(`You need ${cost - currentUser.coins} more coins for this reward.`);
+      }
+    }
+
+    // Close modals when clicking outside
+    window.onclick = function(event) {
+      if (event.target.classList.contains('modal-backdrop')) {
+        event.target.style.display = 'none';
+      }
+    }
+  </script>
+
+
+</body></html>
